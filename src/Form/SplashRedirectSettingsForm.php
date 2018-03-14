@@ -95,7 +95,12 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       if (empty($source) || $source == '<front>') {
         $front = trim($front, '/');
         $front = explode('/', $front);
-        $form_state->setValue('splash_redirect_source', $front[1]);
+        if ($front[1]) {
+          $form_state->setValue('splash_redirect_source', $front[1]);
+        }
+        else {
+          $form_state->setErrorByName('splash_redirect_source', t('You must configure a default front page node first. Check <em> System >> Basic site settings >> Default front page</em>.'));
+        }
       }
 
       if ($source == '<none>') {
