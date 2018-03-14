@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Contains splash_redirect.module.
+ * @author Adam Bernstein <abernstein@pih.org>
+ * 1. Intercept request for a source page, defined by site builder.
+ * 2. Check for existence of splash cookie.
+ *  a. If cookie exists and is not expired, continue to source page.
+ *  b. If cookie does not exist or cookie expired
+ *    i.  Set 'splash' cookie in users' browser.
+ *    ii. Redirect to internal route or page as defined by site builder
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function splash_redirect_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the splash_redirect module.
+    case 'help.page.splash_redirect':
+      $output = '';
+      $output .= '<h3>' . t('About Splash Page Redirect') . '</h3>';
+      $output .= '<p>' . t('This module allows a site builder to configure a single, conditional page redirect, for use in a "splash page" type scenario.') . '</p>';
+      $output .= '<p>' . t('For example, you may want to automatically redirect users arriving on the normal homepage to a different page, perhaps to highlight promotional or limited-time content instead. You may point the splash page at any page you like, internal or external, and therefore your splash page is not restricted to any particular template or node type. Obviously the page you wish to redirect to must be created separately and should be already available.<br>You can also control which page on your site triggers the splash, and you can easily disable the redirect completely at any time.<br>The main difference between this module and ones like <a href = "https://drupal.org/project/splashify">Splashify</a> is that Splash Page Redirect allows you set a cookie to "remember" whether or not a user has seen your splash page. If this cookie is set, the browser will not redirect the user to the splash page.') . '</p>';
+      $output .= '<p>' . t('Note: it is recommended you place a link back to the original page on your splash page for general usability purposes.') . '</b>';
+      return $output;
+
+    default:
+  }
+}

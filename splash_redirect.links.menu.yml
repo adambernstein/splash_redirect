@@ -1,0 +1,6 @@
+splash_redirect.settings:
+  title: 'Splash Page Settings'
+  parent: system.admin_config_search
+  route_name: splash_redirect.settings
+  description: 'Configure splash page redirect.'
+  menu_name: admin

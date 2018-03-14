@@ -1,0 +1,7 @@
+splash_redirect.settings:
+  path: '/admin/config/search/splash_redirect/settings'
+  defaults:
+    _form: '\Drupal\splash_redirect\Form\SplashRedirectSettingsForm'
+    _title: 'Splash Page Redirect'
+  requirements:
+    _permission: 'administer splash redirect settings'

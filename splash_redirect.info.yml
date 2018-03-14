@@ -1,0 +1,6 @@
+name: 'Splash Page Redirect'
+type: module
+description: 'A cookie-based redirect mechanism for implementing splash pages.'
+core: 8.x
+package: 'Custom'
+configure: splash_redirect.settings

@@ -1,0 +1,5 @@
+services:
+  splash_redirect.event_subscriber:
+    class: '\Drupal\splash_redirect\EventSubscriber\SplashRedirectEventSubscriber'
+    tags:
+      - { name: 'event_subscriber' }
