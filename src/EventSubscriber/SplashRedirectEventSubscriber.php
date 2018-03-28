@@ -36,13 +36,22 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       $response = $event->getResponse();
       $route = (\Drupal::routeMatch()->getParameter('node')) ? \Drupal::routeMatch()->getParameter('node')->id() : NULL;
 
-      // If splash-cookie has not been set, and user requesting 'source' page, set cookie and redirect to splash page.
+      // If splash-cookie has not been set, and user requesting 'source' page,
+      // set cookie and redirect to splash page.
       if (!$request->cookies->get($config_cookie) && $config_source == $route) {
+        \Drupal::service('page_cache_kill_switch')->trigger();
         // Issue new response with cookie and redirect location.
         $redir = new TrustedRedirectResponse($config_destination, '302');
         $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, TRUE);
         $redir->headers->setCookie($cookie);
+        $redir->headers->set('Cache-Control', 'public, max-age=0');
         $redir->send();
+
+      }
+      elseif ($config_source == $route) {
+        // Kill cache on this route or else cookie is not read/set.
+        \Drupal::service('page_cache_kill_switch')->trigger();
+        $response->headers->set('Cache-Control', 'public, max-age=0');
       }
     }
   }
