@@ -26,7 +26,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
     $config_cookie = $config->get('splash_redirect.cookie_name');
     $config_duration = $config->get('splash_redirect.duration');
 
-    // If splash configuration is not enabled then we don't need to do any of this :).
+    // If splash config is not enabled then we don't need to do any of this :).
     if ($config_enabled == 1) {
       // Current request from client.
       $request = \Drupal::request();
@@ -49,7 +49,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
 
       }
       elseif ($config_source == $route) {
-        // Kill cache on this route or else cookie is not read/set.
+        // Kill cache on this route or else cookie might not be read with VCL.
         \Drupal::service('page_cache_kill_switch')->trigger();
         $response->headers->set('Cache-Control', 'public, max-age=0');
       }
