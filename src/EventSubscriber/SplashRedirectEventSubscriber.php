@@ -52,7 +52,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       elseif ($config_source == $route) {
         // Kill cache on this route or else cookie might not be read with VCL.
         \Drupal::service('page_cache_kill_switch')->trigger();
-        $response->headers->set('Cache-Control', 'public, max-age=0');
+        // $response->headers->set('Cache-Control', 'public, max-age=0');
       }
     }
   }
