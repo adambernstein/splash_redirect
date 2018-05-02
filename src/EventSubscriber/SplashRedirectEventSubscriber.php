@@ -3,7 +3,7 @@
 namespace Drupal\splash_redirect\EventSubscriber;
 
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
   /**
    * Triggered when system sends response.
    */
-  public function modifyIntercept(FilterResponseEvent $event) {
+  public function modifyIntercept(GetResponseEvent $event) {
     $config = \Drupal::config('splash_redirect.settings');
     $config_enabled = $config->get('splash_redirect.is_enabled');
     $config_source = $config->get('splash_redirect.source');
@@ -45,7 +45,8 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, TRUE);
         $redir->headers->setCookie($cookie);
         $redir->headers->set('Cache-Control', 'public, max-age=0');
-        $redir->send();
+        $event->setResponse($redir);
+        $event->getResponse()->send(); 
 
       }
       elseif ($config_source == $route) {
@@ -61,7 +62,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     // Listen for response event from system and pass it to modifyIntercept.
-    $events[KernelEvents::RESPONSE][] = ['modifyIntercept'];
+    $events[KernelEvents::REQUEST][] = ['modifyIntercept'];
     return $events;
   }
 
