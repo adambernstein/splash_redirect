@@ -34,7 +34,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       $http_host = $request->getHost();
       // Current response from system.
       $response = $event->getResponse();
-      $route = (\Drupal::routeMatch()->getParameter('node')) ? \Drupal::routeMatch()->getParameter('node')->id() : NULL;
+      $route = (\Drupal::routeMatch()->getParameter('node')) ? \Drupal::routeMatch()->getParameter('node')->id() : null;
 
       // If splash-cookie has not been set, and user requesting 'source' page,
       // set cookie and redirect to splash page.
@@ -42,18 +42,13 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         \Drupal::service('page_cache_kill_switch')->trigger();
         // Set redirect response with cookie and redirect location.
         $redir = new TrustedRedirectResponse($config_destination, '302');
-        $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, TRUE);
+        $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, false, true);
         $redir->headers->setCookie($cookie);
         $redir->headers->set('Cache-Control', 'public, max-age=0');
         $redir->addCacheableDependency($config_destination);
         $event->setResponse($redir);
 
-        // No need to send event if Cacheable Dependency added. 
-        // No idea why this works but it does.
-        //$event->getResponse()->send(); 
-
-      }
-      elseif ($config_source == $route) {
+      } elseif ($config_source == $route) {
         // Kill cache on this route or else cookie might not be read with VCL.
         \Drupal::service('page_cache_kill_switch')->trigger();
         // $response->headers->set('Cache-Control', 'public, max-age=0');
