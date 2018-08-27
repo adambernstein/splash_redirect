@@ -17,9 +17,8 @@ For example, you may want to automatically redirect users arriving on the normal
 homepage to a different page, perhaps to highlight promotional or limited-time
 content instead. You may point the splash page at any page you like, internal or
 external, and therefore your splash page is not restricted to any particular
-template or node type. Obviously the page you wish to redirect to must be
-created separately and should be already available.
-
+template or node type. *The page you wish to redirect to should be
+created separately, and should be already available.* 
 
  * For a full description of the module visit:
    https://www.drupal.org/project/splash_redirect

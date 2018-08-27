@@ -26,7 +26,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
     $config_cookie = $config->get('splash_redirect.cookie_name');
     $config_duration = $config->get('splash_redirect.duration');
 
-    // If splash config is not enabled then we don't need to do any of this :).
+    // If splash config is not enabled then we don't need to do any of this.
     if ($config_enabled == 1) {
       // Current request from client.
       $request = \Drupal::request();
@@ -40,13 +40,17 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       // set cookie and redirect to splash page.
       if (!$request->cookies->get($config_cookie) && $config_source == $route) {
         \Drupal::service('page_cache_kill_switch')->trigger();
-        // Issue new response with cookie and redirect location.
+        // Set redirect response with cookie and redirect location.
         $redir = new TrustedRedirectResponse($config_destination, '302');
         $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, TRUE);
         $redir->headers->setCookie($cookie);
         $redir->headers->set('Cache-Control', 'public, max-age=0');
+        $redir->addCacheableDependency($config_destination);
         $event->setResponse($redir);
-        $event->getResponse()->send(); 
+
+        // No need to send event if Cacheable Dependency added. 
+        // No idea why this works but it does.
+        //$event->getResponse()->send(); 
 
       }
       elseif ($config_source == $route) {
@@ -61,7 +65,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Listen for response event from system and pass it to modifyIntercept.
+    // Listen for response event from system and intercept.
     $events[KernelEvents::REQUEST][] = ['modifyIntercept'];
     return $events;
   }
