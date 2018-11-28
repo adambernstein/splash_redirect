@@ -16,7 +16,7 @@ use Drupal\Core\Routing\TrustedRedirectResponse;
 class SplashRedirectEventSubscriber implements EventSubscriberInterface {
 
   /**
-   * Triggered when system sends response.
+   * Triggered on Kernel Request event.
    */
   public function modifyIntercept(GetResponseEvent $event) {
     $config = \Drupal::config('splash_redirect.settings');
@@ -33,7 +33,6 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       $request = \Drupal::request();
       $current_uri = $request->getRequestUri();
       $http_host = $request->getHost();
-      // Current response from system.
       $response = $event->getResponse();
       $route = (\Drupal::routeMatch()->getParameter('node')) ? \Drupal::routeMatch()->getParameter('node')->id() : NULL;
       parse_str($request->getQueryString(), $query);
@@ -67,7 +66,6 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Listen for response event from system and intercept.
     $events[KernelEvents::REQUEST][] = ['modifyIntercept'];
     return $events;
   }
