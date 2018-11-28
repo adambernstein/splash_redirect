@@ -15,7 +15,7 @@
     display: none;
 }
 
-.option {
+.form-item-splash-redirect-is-enabled .option {
     background-color: #ccc;
     bottom: 0;
     cursor: pointer;
@@ -26,7 +26,7 @@
     transition: .4s;
 }
 
-.option:before {
+.form-item-splash-redirect-is-enabled .option:before {
     background-color: #fff;
     bottom: 4px;
     content: "";
