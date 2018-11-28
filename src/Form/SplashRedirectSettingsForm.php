@@ -57,7 +57,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       '#description' => $this->t('Splash page to redirect to. Must be a full url, e.x.<em>https://www.yourpage.com/redirect</em>.'),
     ];
 
-    // Advanced
+    // Advanced.
     $form['advanced'] = [
       '#type' => 'details',
       '#title' => $this->t('Advanced settings'),
@@ -68,7 +68,13 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Cookie Name'),
       '#default_value' => $config->get('splash_redirect.cookie_name'),
-      '#description' => $this->t('Sets the name of the cookie. Defaults to "splash". Use a different name here if you want to invalidate the previous cookie. This will reset the splash page triggering on users browsers.'),
+      '#description' => $this->t(
+        'Sets the name of the cookie. Defaults to "splash". Use a different name here if you want to invalidate the previous cookie. This will reset the splash page triggering on users\' browsers.<br>
+        <p><strong>*Important note for Pantheon customers*: </strong><br>
+        Pantheon\'s Global CDN caches the initial redirect and will continue to redirect users even if the splash cookie is set. 
+        To work around this limitation, <a href="https://pantheon.io/docs/caching-advanced-topics/#using-your-own-session-style-cookies" target="_blank" rel="nofollow">please prefix your Splash cookie name with "SESS"</a><br>
+        (e.g. "<pre>SESSsplash</pre>") to bypass the CDN headers. </p>'
+      ),
     ];
 
     $form['advanced']['splash_redirect_duration'] = [
@@ -77,6 +83,18 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('splash_redirect.duration'),
       '#description' => $this->t('Number of days before cookie expires. Defaults to 7.'),
       '#size' => '3',
+    ];
+
+    $form['advanced']['splash_redirect_append_params'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Append original request query parameters'),
+      '#default_value' => $config->get('splash_redirect.append_params'),
+      '#description' => $this->t(
+        'When checked, will forward the original request parameters from the source URL to the redirect URL. <br>
+        E.x. if the "Source Page" request is: <em>"https://example.com/?q=1234",</em> 
+        the redirect destination will become: <em>"https://example.com/redirect/?q=1234"</em><br>
+        Otherwise, you may override the user\'s query parameters with your own in the "Destination" URL field above.'
+      ),
     ];
 
     $form['#attached']['library'][] = 'splash_redirect/splash_redirect.form';
@@ -115,19 +133,6 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
         $form_state->setErrorByName('splash_redirect_destination', t('You must specify a destination.'));
       }
 
-      // @TODO Handle internal destinations better.
-      // if (UrlHelper::isExternal($destination)) {
-      //   $form_state->setValue('splash_redirect_destination', Url::fromUri($destination));
-      // }
-      // else {
-      //   $form_state->setValue('splash_redirect_destination', Url::fromRoute($destination));
-      // }
-      // $options = ['absolute' => TRUE];
-      // $url_match = Url::fromRoute('entity.node.canonical', ['node' => $source], $options);
-      // if ($destination == $url_match) {
-      //   $form_state->setErrorByName('splash_redirect_destination', t('You cannot redirect to the source.'));
-      // }
-
       if (empty($name)) {
         $form_state->setValue('splash_redirect_cookie_name', 'splash');
       }
@@ -151,6 +156,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       ->set('splash_redirect.destination', $values['splash_redirect_destination'])
       ->set('splash_redirect.cookie_name', $values['splash_redirect_cookie_name'])
       ->set('splash_redirect.duration', $values['splash_redirect_duration'])
+      ->set('splash_redirect.append_params', $values['splash_redirect_append_params'])
       ->save();
     $this->messenger()->addMessage('Saved splash page redirect.');
   }

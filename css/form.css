@@ -1,3 +1,7 @@
+pre {
+    display: inline;
+}
+
 /**
 * Nice-looking checkbox toggle courtesy Matt Smith https://codepen.io/AllThingsSmitty
 */
