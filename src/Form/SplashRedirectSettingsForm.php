@@ -44,7 +44,8 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
     $form['splash_redirect_source'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Source Page'),
-      '#default_value' => Node::load($config->get('splash_redirect.source')),
+      '#default_value' => ($config->get('splash_redirect.source') != NULL) ? 
+        Node::load($config->get('splash_redirect.source')) : '',
       '#description' => $this->t('&quot;From&quot; page, leave blank for &lt;front&gt; page'),
       '#target_type' => 'node',
     ];
