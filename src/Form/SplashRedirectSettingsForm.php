@@ -70,10 +70,10 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('splash_redirect.cookie_name'),
       '#description' => $this->t(
         'Sets the name of the cookie. Defaults to "splash". Use a different name here if you want to invalidate the previous cookie. This will reset the splash page triggering on users\' browsers.<br>
-        <p><strong>*Important note for Pantheon customers*: </strong><br>
+        <strong>*Important note for Pantheon customers*: </strong><br>
         Pantheon\'s Global CDN caches the initial redirect and will continue to redirect users even if the splash cookie is set. 
         To work around this limitation, <a href="https://pantheon.io/docs/caching-advanced-topics/#using-your-own-session-style-cookies" target="_blank" rel="nofollow">please prefix your Splash cookie name with "SESS"</a><br>
-        (e.g. "<pre>SESSsplash</pre>") to bypass the CDN headers. </p>'
+        (e.g. "<pre>SESSsplash</pre>") to bypass the CDN headers.'
       ),
     ];
 

@@ -38,21 +38,18 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
 
       // If splash-cookie has not been set, and user requesting 'source' page,
       // set cookie and redirect to splash page.
-      if (!$request->cookies->get($config_cookie)) {
-        \Drupal::service('page_cache_kill_switch')->trigger();
-        if ($config_source == $route) {
-          // Set redirect response with cookie and redirect location,
-          // optionally append query string.
-          if ($config_append_params == 1) {
-            $destination->setOption('query', $query);
-          }
-          $redir = new TrustedRedirectResponse($destination->setAbsolute()->toString(), '302');
-          $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, TRUE);
-          $redir->headers->setCookie($cookie);
-          $redir->headers->set('Cache-Control', 'public, max-age=0');
-          $redir->addCacheableDependency($destination);
-          $event->setResponse($redir);
+      if (!$request->cookies->get($config_cookie) && $config_source == $route) {
+        // Set redirect response with cookie and redirect location,
+        // optionally append query string.
+        if ($config_append_params == 1) {
+          $destination->setOption('query', $query);
         }
+        $redir = new TrustedRedirectResponse($destination->setAbsolute()->toString(), '302');
+        $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, TRUE, TRUE);
+        $redir->headers->setCookie($cookie);
+        $redir->headers->set('Cache-Control', 'public, max-age=0');
+        $redir->addCacheableDependency($destination);
+        $event->setResponse($redir);
       }
     }
   }
