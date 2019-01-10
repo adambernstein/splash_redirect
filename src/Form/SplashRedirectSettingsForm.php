@@ -24,13 +24,6 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   protected $configFactory;
 
   /**
-   * The route match.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $routeMatch;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(ConfigFactoryInterface $config_factory) {
@@ -65,7 +58,6 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('splash_redirect.settings');
-    $drupalConfig = $this->configFactory->get('system.site');
 
     $form['splash_redirect_is_enabled'] = [
       '#type' => 'checkbox',
@@ -145,7 +137,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       $name = $form_state->getValue('splash_redirect_cookie_name');
       $destination = $form_state->getValue('splash_redirect_destination');
       $duration = $form_state->getValue('splash_redirect_duration');
-      $front = $drupalConfig->get('page.front');
+      $front = $this->configFactory->get('system.site')->get('page.front');
 
       if (empty($source) || $source == '<front>') {
         $front = trim($front, '/');
