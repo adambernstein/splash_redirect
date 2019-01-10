@@ -146,16 +146,16 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
           $form_state->setValue('splash_redirect_source', $front[1]);
         }
         else {
-          $form_state->setErrorByName('splash_redirect_source', t('You must configure a default front page node first. Check <em> System >> Basic site settings >> Default front page</em>.'));
+          $form_state->setErrorByName('splash_redirect_source', $this->t('You must configure a default front page node first. Check <em> System >> Basic site settings >> Default front page</em>.'));
         }
       }
 
       if ($source == '<none>') {
-        $form_state->setErrorByName('splash_redirect_source', t('Cannot use <none> as source url.'));
+        $form_state->setErrorByName('splash_redirect_source', $this->t('Cannot use <none> as source url.'));
       }
 
       if (empty($destination)) {
-        $form_state->setErrorByName('splash_redirect_destination', t('You must specify a destination.'));
+        $form_state->setErrorByName('splash_redirect_destination', $this->t('You must specify a destination.'));
       }
 
       if (empty($name)) {
