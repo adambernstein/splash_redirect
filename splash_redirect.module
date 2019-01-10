@@ -9,7 +9,7 @@
  *  a. If cookie exists and is not expired, continue to source page.
  *  b. If cookie does not exist or cookie expired
  *    i.  Set 'splash' cookie in users' browser.
- *    ii. Redirect to internal route or page as defined by site builder
+ *    ii. Redirect to internal route or page as defined by site builder.
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
