@@ -1,5 +1,5 @@
 pre {
-    display: inline;
+  display: inline;
 }
 
 /**
@@ -7,66 +7,64 @@ pre {
 */
 
 .form-item-splash-redirect-is-enabled {
-    display: inline-block;
-    height: 34px;
-    position: relative;
-    width: 60px;
-    padding:1px !important;
-    
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+  padding: 1px !important;
 }
 
 .form-item-splash-redirect-is-enabled input {
-    display: none;
+  display: none;
 }
 
 .form-item-splash-redirect-is-enabled .option {
-    background-color: #ccc;
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
 }
 
 .form-item-splash-redirect-is-enabled .option:before {
-    background-color: #fff;
-    bottom: 4px;
-    content: "";
-    height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
-    width: 26px;
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
 }
 
 .form-item-splash-redirect-is-enabled input:checked+.option {
-    background-color: #66bb6a;
+  background-color: #66bb6a;
 }
 
 .form-item-splash-redirect-is-enabled input:checked+.option:before {
-    transform: translateX(26px);
+  transform: translateX(26px);
 }
 
 .option {
-    border-radius: 34px;
+  border-radius: 34px;
 }
 
 .option:before {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 #edit-splash-redirect-is-enabled--description {
-    width:600px;
-    margin: 0 !important;
-    position: relative;
-    top:35px;
-    
+  width: 600px;
+  margin: 0 !important;
+  position: relative;
+  top: 35px;
 }
 .form-item {
-    margin:20px 0 !important;
+  margin: 20px 0 !important;
 }
 #edit-submit {
-    margin-top:10px
+  margin-top: 10px
 }
