@@ -6,6 +6,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Messenger\MessengerTrait;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the splash redirect settings form and fields.
@@ -13,6 +15,36 @@ use Drupal\Core\Messenger\MessengerTrait;
 class SplashRedirectSettingsForm extends ConfigFormBase {
 
   use MessengerTrait;
+
+  /**
+   * Drupal\Core\Config\ConfigFactoryInterface definition.
+   *
+   * @var Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    $this->configFactory = $config_factory;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -33,6 +65,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('splash_redirect.settings');
+    $drupalConfig = $this->configFactory->get('system.site');
 
     $form['splash_redirect_is_enabled'] = [
       '#type' => 'checkbox',
@@ -112,7 +145,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       $name = $form_state->getValue('splash_redirect_cookie_name');
       $destination = $form_state->getValue('splash_redirect_destination');
       $duration = $form_state->getValue('splash_redirect_duration');
-      $front = \Drupal::config('system.site')->get('page.front');
+      $front = $drupalConfig->get('page.front');
 
       if (empty($source) || $source == '<front>') {
         $front = trim($front, '/');

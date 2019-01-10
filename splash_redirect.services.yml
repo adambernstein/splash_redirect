@@ -3,3 +3,7 @@ services:
     class: '\Drupal\splash_redirect\EventSubscriber\SplashRedirectEventSubscriber'
     tags:
       - { name: 'event_subscriber' }
+    arguments: ['@config.factory', '@current_route_match']
+  splash_redirect.form:
+    class: '\Drupal\splash_redirect\EventSubscriber\SplashRedirectSettingsForm'
+    arguments: ['@config.factory']

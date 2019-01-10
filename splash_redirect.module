@@ -3,7 +3,7 @@
 /**
  * @file
  * Contains splash_redirect.module.
- * @author Adam Bernstein <abernstein@pih.org>
+ *
  * 1. Intercept request for a source page, defined by site builder.
  * 2. Check for existence of splash cookie.
  *  a. If cookie exists and is not expired, continue to source page.

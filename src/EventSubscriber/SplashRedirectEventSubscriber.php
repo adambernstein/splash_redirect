@@ -53,8 +53,6 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
    *
    * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
    *   Response event.
-   * @param \Symfony\Component\HttpKernel\Request $request
-   *   Client request.
    */
   public function onKernelRequest(GetResponseEvent $event) {
     $config = $this->configFactory->get('splash_redirect.settings');
