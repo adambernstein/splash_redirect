@@ -4,7 +4,7 @@ namespace Drupal\splash_redirect\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\Node;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,10 +24,18 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   protected $configFactory;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
     $this->configFactory = $config_factory;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -35,7 +43,8 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -58,6 +67,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('splash_redirect.settings');
+    $splash_config_source = $config->get('splash_redirect.source');
 
     $form['splash_redirect_is_enabled'] = [
       '#type' => 'checkbox',
@@ -69,8 +79,8 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
     $form['splash_redirect_source'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Source Page'),
-      '#default_value' => ($config->get('splash_redirect.source') != NULL) ?
-      Node::load($config->get('splash_redirect.source')) : '',
+      '#default_value' => ($splash_config_source != NULL) ?
+      $this->entityTypeManager->getStorage('node')->load($splash_config_source) : '',
       '#description' => $this->t('&quot;From&quot; page, leave blank for &lt;front&gt; page'),
       '#target_type' => 'node',
     ];
