@@ -70,7 +70,6 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         return;
       }
       $request = clone $event->getRequest();
-      $current_uri = $request->getRequestUri();
       $http_host = $request->getHost();
       $route = ($this->routeMatch->getParameter('node')) ? $this->routeMatch->getParameter('node')->id() : NULL;
       parse_str($request->getQueryString(), $query);
