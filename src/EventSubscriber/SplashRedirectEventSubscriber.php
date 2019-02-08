@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
+use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -32,11 +33,19 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
   protected $routeMatch;
 
   /**
+   * The page cache kill switch.
+   *
+   * @var Drupal\Core\PageCache\ResponsePolicy\KillSwitch
+   */
+  protected $killSwitch;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match) {
+  public function __construct(ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, KillSwitch $kill_switch) {
     $this->configFactory = $config_factory;
     $this->routeMatch = $route_match;
+    $this->killSwitch = $kill_switch;
   }
 
   /**
@@ -83,9 +92,9 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         if ($config_append_params == 1) {
           $destination->setOption('query', $query);
         }
-        // MUST use service to turn off Internal Page Cache,
+        // MUST use service to turn of Internal Page Cache,
         // or else anonymous users will not ever be able to reach source page.
-        \Drupal::service('page_cache_kill_switch')->trigger();
+        $this->killSwitch->trigger();
         $redir = new TrustedRedirectResponse($destination->setAbsolute()->toString(), '302');
         $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, FALSE);
         $redir->headers->setCookie($cookie);
