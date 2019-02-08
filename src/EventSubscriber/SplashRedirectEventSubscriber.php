@@ -104,6 +104,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         $event->setResponse($redir);
       }
       else {
+        $this->killSwitch->trigger();
       }
     }
   }
