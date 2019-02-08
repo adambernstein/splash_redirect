@@ -69,7 +69,7 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       if (!$event->isMasterRequest()) {
         return;
       }
-      $request = clone $event->getRequest();
+      $request = $event->getRequest();
       $http_host = $request->getHost();
       $route = ($this->routeMatch->getParameter('node')) ? $this->routeMatch->getParameter('node')->id() : NULL;
       parse_str($request->getQueryString(), $query);
@@ -83,12 +83,18 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         if ($config_append_params == 1) {
           $destination->setOption('query', $query);
         }
+        // MUST use service to turn off Internal Page Cache,
+        // or else anonymous users will not ever be able to reach source page.
+        \Drupal::service('page_cache_kill_switch')->trigger();
         $redir = new TrustedRedirectResponse($destination->setAbsolute()->toString(), '302');
         $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, FALSE);
         $redir->headers->setCookie($cookie);
         $redir->headers->set('Cache-Control', 'public, max-age=0');
         $redir->addCacheableDependency($destination);
+        $redir->addCacheableDependency($cookie);
         $event->setResponse($redir);
+      }
+      else {
       }
     }
   }
