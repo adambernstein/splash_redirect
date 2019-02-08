@@ -7,11 +7,11 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Splash redirect Event Subscriber.
@@ -83,10 +83,11 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
         if ($config_append_params == 1) {
           $destination->setOption('query', $query);
         }
-        $redir = new RedirectResponse($destination->setAbsolute()->toString(), '302');
-        $cookie = new Cookie($config_cookie, 'true', strtotime('now  ' . $config_duration . 'days'), '/', '.' . $http_host, TRUE, FALSE);
+        $redir = new TrustedRedirectResponse($destination->setAbsolute()->toString(), '302');
+        $cookie = new Cookie($config_cookie, 'true', strtotime('now + ' . $config_duration . 'days'), '/', '.' . $http_host, FALSE, FALSE);
         $redir->headers->setCookie($cookie);
         $redir->headers->set('Cache-Control', 'public, max-age=0');
+        $redir->addCacheableDependency($destination);
         $event->setResponse($redir);
       }
     }
