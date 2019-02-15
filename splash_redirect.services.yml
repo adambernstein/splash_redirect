@@ -6,4 +6,4 @@ services:
     arguments: ['@config.factory', '@current_route_match', '@page_cache_kill_switch']
   splash_redirect.form:
     class: '\Drupal\splash_redirect\EventSubscriber\SplashRedirectSettingsForm'
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@path.alias_storage', '@path_processor_manager', '@router.request_context']

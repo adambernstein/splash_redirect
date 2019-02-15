@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
 use Drupal\Core\Routing\TrustedRedirectResponse;
-use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
@@ -26,11 +26,11 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
   protected $configFactory;
 
   /**
-   * The route match.
+   * The current route match.
    *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
-  protected $routeMatch;
+  protected $currentRouteMatch;
 
   /**
    * The page cache kill switch.
@@ -42,9 +42,9 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, KillSwitch $kill_switch) {
+  public function __construct(ConfigFactoryInterface $config_factory, CurrentRouteMatch $current_route_match, KillSwitch $kill_switch) {
     $this->configFactory = $config_factory;
-    $this->routeMatch = $route_match;
+    $this->currentRouteMatch = $current_route_match;
     $this->killSwitch = $kill_switch;
   }
 
@@ -53,7 +53,8 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('current_route_match')
     );
   }
 
@@ -80,7 +81,9 @@ class SplashRedirectEventSubscriber implements EventSubscriberInterface {
       }
       $request = $event->getRequest();
       $http_host = $request->getHost();
-      $route = ($this->routeMatch->getParameter('node')) ? $this->routeMatch->getParameter('node')->id() : NULL;
+      $route = ($this->currentRouteMatch->getParameter('node')) ?
+        '/node/' . $this->currentRouteMatch->getParameter('node')->id() :
+        $this->currentRouteMatch->getRouteObject()->getPath();
       parse_str($request->getQueryString(), $query);
 
       // If splash-cookie has not been set,

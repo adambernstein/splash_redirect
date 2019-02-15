@@ -6,7 +6,10 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerTrait;
+use Drupal\Core\Path\AliasManagerInterface;
+use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Routing\RequestContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,6 +27,27 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   protected $configFactory;
 
   /**
+   * The path alias manager.
+   *
+   * @var \Drupal\Core\Path\AliasManagerInterface
+   */
+  protected $aliasManager;
+
+  /**
+   * The path validator.
+   *
+   * @var \Drupal\Core\Path\PathValidatorInterface
+   */
+  protected $pathValidator;
+
+  /**
+   * The request context.
+   *
+   * @var \Drupal\Core\Routing\RequestContext
+   */
+  protected $requestContext;
+
+  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -33,8 +57,11 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, AliasManagerInterface $alias_manager, PathValidatorInterface $path_validator, RequestContext $request_context, EntityTypeManagerInterface $entity_type_manager) {
     $this->configFactory = $config_factory;
+    $this->aliasManager = $alias_manager;
+    $this->pathValidator = $path_validator;
+    $this->requestContext = $request_context;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -44,6 +71,9 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('path.alias_manager'),
+      $container->get('path.validator'),
+      $container->get('router.request_context'),
       $container->get('entity_type.manager')
     );
   }
@@ -77,12 +107,11 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
     ];
 
     $form['splash_redirect_source'] = [
-      '#type' => 'entity_autocomplete',
+      '#type' => 'textfield',
       '#title' => $this->t('Source Page'),
-      '#default_value' => ($splash_config_source != NULL) ?
-      $this->entityTypeManager->getStorage('node')->load($splash_config_source) : '',
+      '#default_value' => $this->aliasManager->getAliasByPath($splash_config_source),
       '#description' => $this->t('&quot;From&quot; page, leave blank for &lt;front&gt; page'),
-      '#target_type' => 'node',
+      '#field_prefix' => $this->requestContext->getCompleteBaseUrl(),
     ];
 
     $form['splash_redirect_destination'] = [
@@ -150,14 +179,20 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       $front = $this->configFactory->get('system.site')->get('page.front');
 
       if (empty($source) || $source == '<front>') {
-        $front = trim($front, '/');
-        $front = explode('/', $front);
-        if ($front[1]) {
-          $form_state->setValue('splash_redirect_source', $front[1]);
+        if ($front) {
+          $form_state->setValue('splash_redirect_source', $front);
         }
         else {
           $form_state->setErrorByName('splash_redirect_source', $this->t('You must configure a default front page node first. Check <em> System >> Basic site settings >> Default front page</em>.'));
         }
+      }
+
+      elseif (substr($source, 0, 1) !== '/') {
+        $form_state->setErrorByName('splash_redirect_source', $this->t("The path '%path' must begin with a slash.", ['%path' => $source]));
+      }
+
+      if (!$this->pathValidator->isValid($source)) {
+        $form_state->setErrorByName('splash_redirect)source', $this->t("Either the path '%path' is invalid or you do not have access to it.", ['%path' => $source]));
       }
 
       if ($source == '<none>') {
@@ -186,8 +221,10 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('splash_redirect.settings');
     $values = $form_state->getValues();
+    // Transform source to alias, if necessary.
+    $source_path = $this->aliasManager->getPathByAlias($values['splash_redirect_source']);
     $config->set('splash_redirect.is_enabled', $values['splash_redirect_is_enabled'])
-      ->set('splash_redirect.source', $values['splash_redirect_source'])
+      ->set('splash_redirect.source', $source_path)
       ->set('splash_redirect.destination', $values['splash_redirect_destination'])
       ->set('splash_redirect.cookie_name', $values['splash_redirect_cookie_name'])
       ->set('splash_redirect.duration', $values['splash_redirect_duration'])
