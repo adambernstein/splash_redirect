@@ -9,8 +9,8 @@
  * Updates "source" page to a path instead of ID.
  */
 function splash_redirect_update_8101() {
-  /** 
-   * @var \Drupal\Core\Config\ConfigFactoryInterface $config_factory 
+  /*
+   * @var \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    */
   $config_factory = \Drupal::configFactory();
   $config = $config_factory->getEditable('splash_redirect.settings');
