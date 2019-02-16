@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Update hooks for the splash_redirect module.
+ */
+
+/**
+ * Updates "source" page to a path instead of ID.
+ */
+function splash_redirect_update_8101() {
+  /** 
+   * @var \Drupal\Core\Config\ConfigFactoryInterface $config_factory 
+   */
+  $config_factory = \Drupal::configFactory();
+  $config = $config_factory->getEditable('splash_redirect.settings');
+  $config->set('splash_redirect.is_enabled', '0');
+  $config->set('splash_redirect.source', '/');
+  $config->save(TRUE);
+
+  // Flush caches.
+  drupal_flush_all_caches();
+}
