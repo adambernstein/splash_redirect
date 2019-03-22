@@ -226,7 +226,9 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
     if (!empty($values['splash_redirect_source'])) {
       $source_path = $this->aliasManager->getPathByAlias($values['splash_redirect_source']);
     }
-    else $source_path = '/';
+    else {
+      $source_path = '/';
+    }
     $config->set('splash_redirect.is_enabled', $values['splash_redirect_is_enabled'])
       ->set('splash_redirect.source', $source_path)
       ->set('splash_redirect.destination', $values['splash_redirect_destination'])
