@@ -178,7 +178,8 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       $duration = $form_state->getValue('splash_redirect_duration');
       $front = $this->configFactory->get('system.site')->get('page.front');
 
-      if (empty($source) || $source == '<front>') {
+      // We assume an input value of '/' means <front>.
+      if (empty($source) || $source == '/' || $source == '<front>') {
         if ($front) {
           $form_state->setValue('splash_redirect_source', $front);
         }
