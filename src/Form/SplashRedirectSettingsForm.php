@@ -178,7 +178,7 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
       $duration = $form_state->getValue('splash_redirect_duration');
       $front = $this->configFactory->get('system.site')->get('page.front');
 
-      // We assume an input value of '/' means <front>.
+      // Assume an input value of '/' means <front>.
       if (empty($source) || $source == '/' || $source == '<front>') {
         if ($front) {
           $form_state->setValue('splash_redirect_source', $front);
@@ -222,8 +222,11 @@ class SplashRedirectSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('splash_redirect.settings');
     $values = $form_state->getValues();
-    // Transform source to alias, if necessary.
-    $source_path = $this->aliasManager->getPathByAlias($values['splash_redirect_source']);
+    // Transform source to alias.
+    if (!empty($values['splash_redirect_source'])) {
+      $source_path = $this->aliasManager->getPathByAlias($values['splash_redirect_source']);
+    }
+    else $source_path = '/';
     $config->set('splash_redirect.is_enabled', $values['splash_redirect_is_enabled'])
       ->set('splash_redirect.source', $source_path)
       ->set('splash_redirect.destination', $values['splash_redirect_destination'])
